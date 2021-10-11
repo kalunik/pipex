@@ -6,34 +6,30 @@
 /*   By: wjonatho <wjonatho@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/07 15:08:07 by wjonatho          #+#    #+#             */
-/*   Updated: 2021/10/07 17:57:28 by wjonatho         ###   ########.fr       */
+/*   Updated: 2021/10/11 15:51:10 by wjonatho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+/*#include "pipex.h"
 
 void	pipex(int argc, char **argv)
 {
-	int	avail;
 
-	avail	= access("file.txt", R_OK); //для проверки доступности файла
-
-}
-
-/*access
-◦ open
-◦ unlink
+}*/
+/*access("file.txt", R_OK)
+◦ open("file.txt", 1)
+◦ unlink("file.txt") //remove directory entry
 ◦ close
 ◦ read
-◦ write
+◦ write:w
 ◦ malloc
-◦ waitpid
-◦ wait
+◦ waitpid(pid,*stat_loc, options)
+◦ wait(*stat_loc)
 ◦ free
-◦ pipe
-◦ dup
-◦ dup2
-◦ execve
+◦ pipe(fd[2])
+◦ dup(fd)
+◦ dup2(fd, fd2)
+◦ execve("text.txt", )
 ◦ fork
 ◦ perror
 ◦ strerror
