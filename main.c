@@ -6,7 +6,7 @@
 /*   By: wjonatho <wjonatho@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/07 15:09:44 by wjonatho          #+#    #+#             */
-/*   Updated: 2021/10/11 18:37:43 by wjonatho         ###   ########.fr       */
+/*   Updated: 2021/10/12 18:13:08 by wjonatho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,13 +32,56 @@
 		printf("an error: %s\n", strerror(errno));
 	}*/
 //}
+/// It could find string with PATH in env
+/// @param env It will show UNIX enviroment, like command `env`
+/// @return
+/// position of line, where "PATH" had been found
+/// or -1, if nothing found.
+static void	*leek_case(size_t num_segment, char **arr)
+{
+	size_t	i;
 
-int	main(int argc, char **argv)
+	i = 0;
+	while (i < num_segment)
+		free(arr[i++]);
+	free(arr);
+	return (NULL);
+}
+
+int	where_is_path(char **env)
+{
+	int	position;
+
+	position = 0;
+	while (env[position])
+	{
+		printf("%s\n", env[position]);
+		if (ft_strncmp("PATH", env[position], 4))
+		{
+			return (position);
+		}
+		position++;
+	}
+	return (-1);
+}
+
+void	find_path(int argc, char **argv, char **env)
+{
+	char	**split;
+
+	printf("%d ---- where\n", where_is_path(env));
+	split = ft_split(env[where_is_path(env)], ':');
+	printf("%s\n", split[1]);
+	leek_case(10, split);
+}
+
+int	main(int argc, char **argv, char **env)
 {
 	int	fd[2];
 	int	pid1;
 	int	pid2;
 
+	find_path(argc, argv, env);
 	if (getenv(argv[1]))
 	{
 		printf("it's ok\n");

@@ -1,6 +1,7 @@
 #ifndef PIPEX_H
 # define PIPEX_H
 
+# include "../libft/libft.h"
 # include <unistd.h> //access unlink
 # include <sys/fcntl.h> // open
 # include <sys/wait.h> //waitpid
