@@ -6,14 +6,14 @@
 /*   By: wjonatho <wjonatho@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/07 15:09:44 by wjonatho          #+#    #+#             */
-/*   Updated: 2021/10/12 18:13:08 by wjonatho         ###   ########.fr       */
+/*   Updated: 2021/10/13 17:27:42 by wjonatho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <sys/socket.h>
 #include <errno.h>
 #include <stdlib.h>
-#include "pipex.h"
+#include "includes/pipex.h"
 
 /*int	main(void)
 {
@@ -55,8 +55,8 @@ int	where_is_path(char **env)
 	position = 0;
 	while (env[position])
 	{
-		printf("%s\n", env[position]);
-		if (ft_strncmp("PATH", env[position], 4))
+		printf("env[%d] -- %s\n", position, env[position] + 5);
+		if (ft_strncmp("PATH", env[position], 4) == 0)
 		{
 			return (position);
 		}
@@ -65,14 +65,25 @@ int	where_is_path(char **env)
 	return (-1);
 }
 
-void	find_path(int argc, char **argv, char **env)
+void	find_path_to_command(char *command, char **env)
 {
-	char	**split;
+	char	**splited;
+	char	*path_to_command;
+	int		i = 0;
 
 	printf("%d ---- where\n", where_is_path(env));
-	split = ft_split(env[where_is_path(env)], ':');
-	printf("%s\n", split[1]);
-	leek_case(10, split);
+	splited = ft_split(env[where_is_path(env)] + 5, ':');
+	while (i < 1)
+	{
+		printf("%s -- splited\n", splited[i]);
+		path_to_command = ft_strjoin(splited[i], "/");
+		path_to_command = ft_strjoin(path_to_command, command);
+		printf("%s -- path\n", path_to_command);
+		if (access(path_to_command, R_OK) == 0)
+			write(1, "Success ++++ \n", 14); //если комманда найдена
+		i++;
+	}
+	leek_case(i, splited);
 }
 
 int	main(int argc, char **argv, char **env)
@@ -81,7 +92,7 @@ int	main(int argc, char **argv, char **env)
 	int	pid1;
 	int	pid2;
 
-	find_path(argc, argv, env);
+	find_path_to_command(argv[2], env);
 	if (getenv(argv[1]))
 	{
 		printf("it's ok\n");
