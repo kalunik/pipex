@@ -6,7 +6,7 @@
 /*   By: wjonatho <wjonatho@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/07 15:09:44 by wjonatho          #+#    #+#             */
-/*   Updated: 2021/10/13 17:27:42 by wjonatho         ###   ########.fr       */
+/*   Updated: 2021/10/18 19:31:10 by wjonatho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,14 +73,17 @@ void	find_path_to_command(char *command, char **env)
 
 	printf("%d ---- where\n", where_is_path(env));
 	splited = ft_split(env[where_is_path(env)] + 5, ':');
-	while (i < 1)
+	while (i < 10)
 	{
 		printf("%s -- splited\n", splited[i]);
 		path_to_command = ft_strjoin(splited[i], "/");
 		path_to_command = ft_strjoin(path_to_command, command);
 		printf("%s -- path\n", path_to_command);
 		if (access(path_to_command, R_OK) == 0)
+		{
 			write(1, "Success ++++ \n", 14); //если комманда найдена
+			break ;
+		}
 		i++;
 	}
 	leek_case(i, splited);
@@ -91,6 +94,7 @@ int	main(int argc, char **argv, char **env)
 	int	fd[2];
 	int	pid1;
 	int	pid2;
+	char	**cmd1 = {"ping", "-c", "5", NULL};
 
 	find_path_to_command(argv[2], env);
 	if (getenv(argv[1]))
@@ -113,7 +117,8 @@ int	main(int argc, char **argv, char **env)
 		dup2(fd[1], STDOUT_FILENO);
 		close(fd[0]);
 		close(fd[1]);
-		execlp("ping", "ping", "-c", "5", "google.com", NULL);
+		//execlp("ping", "ping", "-c", "5", "google.com", NULL);
+		execve("HZCHTO", cmd1, env);
 	}
 	pid2 = fork();
 	if (pid2 == 0)
