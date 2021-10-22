@@ -6,7 +6,7 @@
 /*   By: wjonatho <wjonatho@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/07 15:09:44 by wjonatho          #+#    #+#             */
-/*   Updated: 2021/10/18 19:31:10 by wjonatho         ###   ########.fr       */
+/*   Updated: 2021/10/22 20:17:07 by wjonatho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,16 @@
 		printf("an error: %s\n", strerror(errno));
 	}*/
 //}
+static int	str_count(char **strings)
+{
+	int	i;
+
+	i = 0;
+	while (strings[i])
+		i++;
+	return (i);
+}
+
 /// It could find string with PATH in env
 /// @param env It will show UNIX enviroment, like command `env`
 /// @return
@@ -55,7 +65,7 @@ int	where_is_path(char **env)
 	position = 0;
 	while (env[position])
 	{
-		printf("env[%d] -- %s\n", position, env[position] + 5);
+		//printf("env[%d] -- %s\n", position, env[position] + 5);
 		if (ft_strncmp("PATH", env[position], 4) == 0)
 		{
 			return (position);
@@ -65,73 +75,111 @@ int	where_is_path(char **env)
 	return (-1);
 }
 
-void	find_path_to_command(char *command, char **env)
+char	*find_path_to_command(char *command_with_args, char **env)
 {
 	char	**splited;
 	char	*path_to_command;
 	int		i = 0;
+	char	**command;
 
-	printf("%d ---- where\n", where_is_path(env));
+	//printf("%d ---- where\n", where_is_path(env));
 	splited = ft_split(env[where_is_path(env)] + 5, ':');
-	while (i < 10)
+	command = ft_split(command_with_args, ' ');
+	while (i < str_count(env))
 	{
-		printf("%s -- splited\n", splited[i]);
+		//printf("%s -- splited\n", splited[i]);
 		path_to_command = ft_strjoin(splited[i], "/");
-		path_to_command = ft_strjoin(path_to_command, command);
-		printf("%s -- path\n", path_to_command);
+		path_to_command = ft_strjoin(path_to_command, command[0]);
 		if (access(path_to_command, R_OK) == 0)
 		{
-			write(1, "Success ++++ \n", 14); //если комманда найдена
+			printf("%s -- path\n", path_to_command);
 			break ;
 		}
 		i++;
 	}
 	leek_case(i, splited);
+	return (path_to_command);
 }
 
 int	main(int argc, char **argv, char **env)
 {
-	int	fd[2];
-	int	pid1;
-	int	pid2;
-	char	**cmd1 = {"ping", "-c", "5", NULL};
+	int		fd[2];
+	int		pid1;
+	int		pid2;
+	char	**arguments;
+	char	*cmd;
 
-	find_path_to_command(argv[2], env);
-	if (getenv(argv[1]))
+	cmd = find_path_to_command(argv[2], env);
+	arguments = ft_split(argv[2], ' ');
+	if (execve(cmd, arguments, env))
+		perror("cant do execve");
+/*	if (pipe(fd) == -1)
 	{
-		printf("it's ok\n");
+		perror("error");
+		exit(EXIT_FAILURE);
+	}*/
+}
+
+/*
+int	main(int argc, char **argv)
+{
+	int arr[] = {1, 3, 5, 54, 3, 23, 4, 4, 2};
+*/
+/*	int	fd[2];
+
+	//fd[0] - read
+	//fd[1] - write
+	if (pipe(fd) == -1)
+	{
+		printf("An error occured with opening pipe\n");
+	}
+	int id = fork();
+	if (id == 0)
+	{
+		int x = 3;
+		close(fd[0]);
+		printf("Input a number: ");
+		scanf("%d", &x);
+		if (write(fd[1], &x, sizeof(int)) == -1)
+			perror("writing in pipe");
+		close(fd[1]);
 	}
 	else
 	{
-		perror("Can't find env");
-	}
-	if (pipe(fd) == -1)
-		return (1);
-	pid1 = fork();
-	if (pid1 < 0)
-	{
-		return (2);
-	}
-	if (pid1 == 0)
-	{
-		dup2(fd[1], STDOUT_FILENO);
-		close(fd[0]);
+		int y;
 		close(fd[1]);
-		//execlp("ping", "ping", "-c", "5", "google.com", NULL);
-		execve("HZCHTO", cmd1, env);
-	}
-	pid2 = fork();
-	if (pid2 == 0)
-	{
-		dup2(fd[0], STDIN_FILENO);
+		read(fd[0], &y, sizeof(int));
 		close(fd[0]);
-		close(fd[1]);
-		execlp("grep", "grep", "round", NULL);
-		//execve("grep", argv[3], NULL);
+		printf("Got from child process %d\n", y);
+	}*//*
+
+	*/
+/*
+	int	id;
+	int	n;
+
+	id = fork();
+	if (id == 0)
+	{
+		n = 1;
 	}
-	close(fd[0]);
-	close(fd[1]);
-	waitpid(pid1, NULL, 0);
-	waitpid(pid2, NULL, 0);
-	return (0);
-}
+	else
+	{
+		n = 6;
+	}
+	if (id != 0)
+	{
+		wait(0);
+	}
+	int	i;
+	for (i = n; i < n + 5; i++)
+	{
+		printf("%d ", i);
+		fflush(stdout);
+	}
+	if (id != 0)
+		printf("\n");
+*//*
+
+
+}*/
