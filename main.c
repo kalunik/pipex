@@ -6,7 +6,7 @@
 /*   By: wjonatho <wjonatho@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/07 15:09:44 by wjonatho          #+#    #+#             */
-/*   Updated: 2021/10/22 20:17:07 by wjonatho         ###   ########.fr       */
+/*   Updated: 2021/10/23 16:44:25 by wjonatho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ char	*find_path_to_command(char *command_with_args, char **env)
 		path_to_command = ft_strjoin(path_to_command, command[0]);
 		if (access(path_to_command, R_OK) == 0)
 		{
-			printf("%s -- path\n", path_to_command);
+			//printf("%s -- path\n", path_to_command);
 			break ;
 		}
 		i++;
@@ -109,15 +109,48 @@ int	main(int argc, char **argv, char **env)
 	char	**arguments;
 	char	*cmd;
 
-	cmd = find_path_to_command(argv[2], env);
-	arguments = ft_split(argv[2], ' ');
-	if (execve(cmd, arguments, env))
-		perror("cant do execve");
-/*	if (pipe(fd) == -1)
+	if (argc != 5)
 	{
-		perror("error");
+		perror("You should give more arguments");
 		exit(EXIT_FAILURE);
-	}*/
+	}
+	if (pipe(fd) == -1)
+		return (1);
+	pid1 = fork();
+	if (pid1 < 0)
+	{
+		return (2);
+	}
+	if (pid1 == 0)
+	{
+		dup2(fd[1], STDOUT_FILENO);
+		close(fd[0]);
+		close(fd[1]);
+		//execlp("ping", "ping", "-c", "5", "google.com", NULL);
+		cmd = find_path_to_command(argv[2], env);
+		arguments = ft_split(argv[2], ' ');
+		execve(cmd, arguments, env);
+	}
+	pid2 = fork();
+	if (pid2 < 0)
+	{
+		return (2);
+	}
+	if (pid2 == 0)
+	{
+		dup2(fd[0], STDIN_FILENO);
+		close(fd[0]);
+		close(fd[1]);
+		//execlp("grep", "grep", "round", NULL);
+		cmd = find_path_to_command(argv[3], env);
+		arguments = ft_split(argv[3], ' ');
+		execve(cmd, arguments, env);
+	}
+	close(fd[0]);
+	close(fd[1]);
+	waitpid(pid1, NULL, 0);
+	waitpid(pid2, NULL, 0);
+	return (0);
 }
 
 /*
