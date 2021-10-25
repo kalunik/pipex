@@ -6,7 +6,7 @@
 /*   By: wjonatho <wjonatho@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/07 15:09:44 by wjonatho          #+#    #+#             */
-/*   Updated: 2021/10/23 16:44:25 by wjonatho         ###   ########.fr       */
+/*   Updated: 2021/10/25 21:13:53 by wjonatho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,8 +101,15 @@ char	*find_path_to_command(char *command_with_args, char **env)
 	return (path_to_command);
 }
 
+void	error_n_exit(char *err_msg)
+{
+	perror(err_msg);
+	exit(EXIT_FAILURE);
+}
+
 int	main(int argc, char **argv, char **env)
 {
+	int		open_fd;
 	int		fd[2];
 	int		pid1;
 	int		pid2;
@@ -110,38 +117,46 @@ int	main(int argc, char **argv, char **env)
 	char	*cmd;
 
 	if (argc != 5)
-	{
-		perror("You should give more arguments");
-		exit(EXIT_FAILURE);
-	}
+		error_n_exit("You should give four arguments");
 	if (pipe(fd) == -1)
-		return (1);
+		error_n_exit("Can't create a pipe");
 	pid1 = fork();
 	if (pid1 < 0)
-	{
-		return (2);
-	}
+		error_n_exit("Can't create a new process");
+	write(1, "here\n", 5);
 	if (pid1 == 0)
 	{
+		open_fd = open(argv[1], O_RDONLY);
+		if (open_fd == -1)
+		{
+			perror("Can't open file to read");
+			exit(1);
+		}
+		else
+			dup2(open_fd, STDIN_FILENO);
 		dup2(fd[1], STDOUT_FILENO);
 		close(fd[0]);
 		close(fd[1]);
-		//execlp("ping", "ping", "-c", "5", "google.com", NULL);
+		close(open_fd);
 		cmd = find_path_to_command(argv[2], env);
 		arguments = ft_split(argv[2], ' ');
 		execve(cmd, arguments, env);
 	}
 	pid2 = fork();
 	if (pid2 < 0)
-	{
-		return (2);
-	}
+		error_n_exit("Can't create a new process");
 	if (pid2 == 0)
 	{
+		open_fd = open(argv[4], O_CREAT | O_WRONLY | O_TRUNC,
+				S_IREAD | S_IWRITE);
+		if (open_fd == -1)
+			error_n_exit("Can't open file to write");
+		else
+			dup2(open_fd, STDOUT_FILENO);
 		dup2(fd[0], STDIN_FILENO);
 		close(fd[0]);
 		close(fd[1]);
-		//execlp("grep", "grep", "round", NULL);
+		close(open_fd);
 		cmd = find_path_to_command(argv[3], env);
 		arguments = ft_split(argv[3], ' ');
 		execve(cmd, arguments, env);
@@ -156,7 +171,7 @@ int	main(int argc, char **argv, char **env)
 /*
 int	main(int argc, char **argv)
 {
-	int arr[] = {1, 3, 5, 54, 3, 23, 4, 4, 2};
+int arr[] = {1, 3, 5, 54, 3, 23, 4, 4, 2};
 */
 /*	int	fd[2];
 
