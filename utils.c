@@ -64,6 +64,5 @@ char	*find_command_path(char *command_with_args, char **env)
 			break ;
 		i++;
 	}
-	leak_case(i, splited);
 	return (path_to_command);
 }
