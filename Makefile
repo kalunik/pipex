@@ -1,9 +1,9 @@
 CC	=	gcc
 RM	=	rm -f
-CFLAGS	=	-I./includes #-Wall -Wextra -Werror
+CFLAGS	=	-I./includes -Wall -Wextra -Werror
 NAME	=	pipex
 LIBFT	=	./libft
-SRCS	=	main.c
+SRCS	=	pipex.c utils.c
 
 OBJS	=	$(patsubst %.c, %.o, $(SRCS))
 

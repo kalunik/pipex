@@ -44,5 +44,5 @@ add_executable(
         libft/ft_toupper.c
 
         pipex.c
-        main.c
+        utils.c
 )
