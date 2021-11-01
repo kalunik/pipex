@@ -6,7 +6,7 @@
 /*   By: wjonatho <wjonatho@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/07 15:08:07 by wjonatho          #+#    #+#             */
-/*   Updated: 2021/10/30 20:36:23 by wjonatho         ###   ########.fr       */
+/*   Updated: 2021/11/01 17:53:20 by wjonatho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,13 +46,16 @@ static inline void	process(int *pid, int *fd, char *cmd_argv, char **env)
 		dup2(fd[0], STDIN_FILENO);
 	close_fd_and_waitpid(fd, NULL);
 	execve(find_command_path(cmd_argv, env), ft_split(cmd_argv, ' '), env);
+	if (errno != 0)
+		error_n_exit("Error");
 }
 
 int	main(int argc, char **argv, char **env)
 {
 	int		fd[3];
-	int		pid[2];
+	pid_t	pid[2];
 
+	errno = 0;
 	if (argc != 5)
 		error_n_exit("You should give four arguments");
 	if (pipe(fd) == -1)

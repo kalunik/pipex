@@ -6,7 +6,7 @@
 /*   By: wjonatho <wjonatho@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/30 15:04:47 by wjonatho          #+#    #+#             */
-/*   Updated: 2021/10/30 19:58:02 by wjonatho         ###   ########.fr       */
+/*   Updated: 2021/11/01 17:11:03 by wjonatho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef PIPEX_H
@@ -16,6 +16,7 @@
 # include <sys/fcntl.h>			//open
 # include <sys/wait.h>			//waitpid
 # include <stdio.h>				//perror
+# include <sys/errno.h>
 
 void	error_n_exit(char *err_msg);
 int		where_is_path(char **env);
