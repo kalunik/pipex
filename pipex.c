@@ -58,24 +58,28 @@ int	main(int argc, char **argv, char **env)
 	errno = 0;
 	if (argc != 5)
 		error_n_exit("You should give four arguments");
+
 	if (pipe(fd) == -1)
 		error_n_exit("Can't create a pipe");
+
 	pid[0] = fork();
 	if (pid[0] < 0)
-		error_n_exit("Can't create a new process");
+		error_n_exit("Can't fork a new process");
 	if (pid[0] == 0)
 	{
 		fd[2] = open(argv[1], O_RDONLY);
 		process(pid, fd, argv[2], env);
 	}
+
 	pid[1] = fork();
 	if (pid[1] < 0)
-		error_n_exit("Can't create a new process");
+		error_n_exit("Can't fork a new process");
 	if (pid[1] == 0)
 	{
 		fd[2] = open(argv[4], O_CREAT | O_WRONLY | O_TRUNC, 0777);
 		process(pid, fd, argv[3], env);
 	}
+
 	close_fd_and_waitpid(fd, pid);
 	return (0);
 }
