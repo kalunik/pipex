@@ -35,10 +35,13 @@ static inline void	process(int *pid, int *fd, char *cmd_argv, char **env)
 	}
 	else
 	{
-		if (pid[0] == 0)
-			dup2(fd[2], STDIN_FILENO);
-		if (pid[1] == 0)
-			dup2(fd[2], STDOUT_FILENO);
+		if (fd[2] != 0)
+		{
+			if (pid[0] == 0)
+				dup2(fd[2], STDIN_FILENO);
+			if (pid[1] == 0)
+				dup2(fd[2], STDOUT_FILENO);
+		}
 	}
 	if (pid[0] == 0)
 		dup2(fd[1], STDOUT_FILENO);
@@ -50,13 +53,20 @@ static inline void	process(int *pid, int *fd, char *cmd_argv, char **env)
 		error_n_exit("Error");
 }
 
+///@param argv[1] –– infile. File can be used for cmd1. It will work only if
+/// you use redirect trigger in argv[6]
+///@param argv[2] –– cmd1. Imagine next is pipe, next to cmd1
+///@param argv[3] –– cmd2.
+///@param argv[4] –– outfile. u should use redirect in argv[5]
+///@param argv[5] –– necessary for outfile. use >
+///@param argv[6] –– necessary for infile. use <
 int	main(int argc, char **argv, char **env)
 {
 	int		fd[3];
 	pid_t	pid[2];
 
 	errno = 0;
-	if (argc != 5)
+	if (argc <= 7) ///added (to 5) 2 argc for infile/outfile trigger; now ac = 7
 		error_n_exit("You should give four arguments");
 
 	if (pipe(fd) == -1)
@@ -67,7 +77,11 @@ int	main(int argc, char **argv, char **env)
 		error_n_exit("Can't fork a new process");
 	if (pid[0] == 0)
 	{
-		fd[2] = open(argv[1], O_RDONLY);
+		///infile will use file in argv[1]. if u have trigger in argv[5]
+		if (argv[6][0] == '<')
+			fd[2] = open(argv[1], O_RDONLY);
+		else
+			fd[2] = 0;
 		process(pid, fd, argv[2], env);
 	}
 
@@ -76,6 +90,8 @@ int	main(int argc, char **argv, char **env)
 		error_n_exit("Can't fork a new process");
 	if (pid[1] == 0)
 	{
+		///this is for outfile
+		if (argv[5][0] == '>')
 		fd[2] = open(argv[4], O_CREAT | O_WRONLY | O_TRUNC, 0777);
 		process(pid, fd, argv[3], env);
 	}
