@@ -95,7 +95,6 @@ int	main(int argc, char **argv, char **env)
 		fd[2] = open(argv[4], O_CREAT | O_WRONLY | O_TRUNC, 0777);
 		process(pid, fd, argv[3], env);
 	}
-
 	close_fd_and_waitpid(fd, pid);
 	return (0);
 }
